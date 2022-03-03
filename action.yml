@@ -1,0 +1,19 @@
+name: "Parse base64 inputs as env"
+description: "Parses a base64 json input and sets the variables in GITHUB_ENV"
+inputs:
+  b64-json-encoded-input: # id of input
+    description: "The base64 encoded json input"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Decode input in file
+      run: echo "${{ inputs.b64-json-encoded-input }}" | sed 's/ //g' | base64 -d > tmp.json
+      shell: bash
+
+    - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
+      shell: bash
+
+    - name: Set env from file
+      run: setenv.sh tmp.json
+      shell: bash
