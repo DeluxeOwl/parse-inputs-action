@@ -4,16 +4,20 @@ inputs:
   b64-json-encoded-input: # id of input
     description: "The base64 encoded json input"
     required: true
+  file-name:
+    description: "The name of the json file"
+    default: tmp.json
+    required: false
 runs:
   using: "composite"
   steps:
     - name: Decode input in file
-      run: echo "${{ inputs.b64-json-encoded-input }}" | sed 's/ //g' | base64 -d > tmp.json
+      run: echo "${{ inputs.b64-json-encoded-input }}" | sed 's/ //g' | base64 -d > "${{ inputs.file-name }}"
       shell: bash
 
     - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
       shell: bash
 
     - name: Set env from file
-      run: setenv.sh tmp.json
+      run: setenv.sh "${{ inputs.file-name }}"
       shell: bash
